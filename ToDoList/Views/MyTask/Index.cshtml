@@ -1,0 +1,163 @@
+@using ToDoList.Services
+@model ToDoList.ViewModels.TaskModels
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<p>
+    <a>Список задач</a>
+</p>
+
+
+<div class="pb-5">
+    <form method="get" asp-action="Index">
+        <div class="d-flex align-content-between">
+            <div class="col-4 px-3">
+                <select name="priority" asp-items="ViewBag.Priorities" class="form-control">
+                    <option value="" disabled selected>Выберите приоритет</option>
+                </select>
+            </div>
+
+            <div class="col-4 px-3">
+                <select name="status" asp-items="ViewBag.Status" class="form-control">
+                    <option value="" disabled selected>Выберите статус</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-outline-success px-4">Filter</button>
+
+            <div class="input-group mb-3 px-3">
+                <input type="text" class="form-control" id="taskname" name="taskname" placeholder="Поиск по названием"/>
+                <button class="btn btn-outline-success" type="submit" id="taskname">Search</button>
+            </div>
+        </div>
+    </form>
+    
+    <form method="get" asp-action="Index">
+        <div class="d-flex py-3">
+            <div class="col-3 px-3">
+                <label for="dateFrom" class="form-label">Filter by created date from:</label>
+                <input type="date" id="dateFrom" name="dateFrom" class="form-control">
+                <button class="btn btn-outline-success my-1" type="submit" id="dateFrom">Filter</button>
+            </div>
+            <div class="col-3 px-3">
+                <label for="dateTo" class="form-label">Filter by created date to:</label>
+                <input type="date" id="dateTo" name="dateTo" class="form-control">
+                <button class="btn btn-outline-success my-1" type="submit" id="dateTo">Filter</button>
+            </div>
+
+            <div class="col-4">
+                <label for="description" class="form-label">Filter by words:</label>
+                <input type="text" id="description" name="description" class="form-control" placeholder="Поиск по описанием">
+                <button class="btn btn-outline-success my-1" type="submit" id="description">Filter</button>
+            </div>
+            
+        </div>
+    </form>
+</div>
+
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Номер</th>
+        <th>
+            <a class="text-decoration-none" asp-action="Index" asp-route-sortOrder="@ViewBag.NameSort">Название задачи</a>
+        </th>
+        <th>
+            <a class="text-decoration-none" asp-action="Index" asp-route-sortOrder="@ViewBag.PrioritySort">Приоритет</a>
+        </th>
+        <th>
+            <a class="text-decoration-none" asp-action="Index" asp-route-sortOrder="@ViewBag.StatusSort">Статус</a>
+        </th>
+        <th>
+            <a class="text-decoration-none" asp-action="Index" asp-route-sortOrder="@ViewBag.CreateDate">Дата создания</a>
+        </th>
+        <th>Имя создатель</th>
+        <th>Имя исполнителя</th>
+        <th>Действия</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.Tasks)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Priority)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserCreator.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserExecutor.UserName)
+            </td>
+            <td>
+                @if (item.Status == Status.Новая)
+                {
+                    <a asp-action="Open" asp-route-id="@item.Id">
+                        <button class="btn btn-outline-primary">Открыть</button>
+                    </a>
+                    <a asp-action="Details" asp-route-id="@item.Id">
+                        <button class="btn btn-outline-primary">Детали</button>
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@item.Id">
+                        <button class="btn btn-outline-primary">Удалить</button>
+                    </a>
+                    <a asp-action="TakeTask" asp-route-id="@item.Id">
+                        <button class="btn btn-outline-primary">Взять задачу</button>
+                    </a>
+                }
+                else if (item.Status == Status.Открыта)
+                {
+                    <a asp-action="Close" asp-route-id="@item.Id">
+                        <button class="btn btn-outline-primary">Закрыть</button>
+                    </a>
+                    <a asp-action="Details" asp-route-id="@item.Id">
+                        <button class="btn btn-outline-primary">Детали</button>
+                    </a>
+                }
+                else if (item.Status == Status.Закрыта)
+                {
+                    <a asp-action="Details" asp-route-id="@item.Id">
+                        <button class="btn btn-outline-primary">Детали</button>
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@item.Id">
+                        <button class="btn btn-outline-primary">Удалить</button>
+                    </a>
+                }
+                else
+                {
+                    <a asp-action="Details" asp-route-id="@item.Id">
+                        <button class="btn btn-outline-primary">Детали</button>
+                    </a>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<div>
+    @if (Model.PageViewModel.HasPreviousPage)
+    {
+        <a class="btn btn-outline-success" asp-action="Index" asp-route-page="@(Model.PageViewModel.PageNumber - 1)">Предыдущая</a>
+    }
+
+    @if (Model.PageViewModel.HasNextPage)
+    {
+        <a class="btn btn-outline-warning" asp-action="Index" asp-route-page="@(Model.PageViewModel.PageNumber + 1)">Следующая</a>
+    }
+</div>

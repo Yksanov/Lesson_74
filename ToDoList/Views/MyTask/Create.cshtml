@@ -1,0 +1,50 @@
+@using System.Security.Claims
+@model ToDoList.Models.MyTask
+
+@{
+    ViewData["Title"] = "Create";
+}
+<h3 class="text-center">Новая задача</h3>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">Название задачи</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group py-2">
+                <label asp-for="Priority" class="control-label">Приоритет</label>
+                <select asp-for="Priority" asp-items="ViewBag.Priorities" class="form-control">
+                    <option disabled selected>Выберите приоритет</option>
+                </select>
+                <span asp-validation-for="Priority" class="text-danger"></span>
+            </div>
+
+            <div class="form-group py-2">
+                <label asp-for="Description" class="control-label">Описание задачи</label>
+                <textarea asp-for="Description" class="form-control" ></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            @* <div class="form-group"> *@
+            @*     <label asp-for="UserName" class="control-label">Имя исполнителя</label> *@
+            @*     <input asp-for="UserName" class="form-control" /> *@
+            @*     <span asp-validation-for="UserName" class="text-danger"></span> *@
+            @* </div> *@
+
+            <input type="hidden" asp-for="CreatorId" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
+            
+            <div class="form-group py-2 d-flex justify-content-center">
+                <button type="submit" class="btn btn-outline-primary">Добавить задачу</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

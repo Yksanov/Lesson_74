@@ -1,0 +1,75 @@
+@using ToDoList.Services
+@model ToDoList.Models.MyTask
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div class="container">
+    <div class="card border-5">
+        <div class="card-header">
+            <p>
+                @if (Model.Status == Status.Новая)
+                {
+                    <strong>Задача новая</strong>
+                }
+                else if (Model.Status == Status.Открыта)
+                {
+                    <strong>Задача открыта</strong>
+                }
+                else if (Model.Status == Status.Закрыта)
+                {
+                    <strong>Задача закрыта</strong>
+                }
+            </p>
+        </div>
+        <div class="row align-content-around pb-5">
+            <div class="col-2 px-5">
+                <p>Статус</p>
+                <p>Приоритет</p>
+                <p>Номер</p>
+                <p>Дата создания</p>
+                <p>
+                    @if (Model.Status == Status.Закрыта)
+                    {
+                        <p>Дата закрытия</p>
+                    }
+                    else if(Model.Status == Status.Открыта)
+                    {
+                        <p>Дата открытия</p>
+                    }
+                </p>
+                <p>Создатель</p>
+                <a class="btn btn-outline-warning" asp-action="Edit" asp-route-id="@Model?.Id">Изменить</a>
+            </div>
+            <div class="col-2">
+                <p>@Html.DisplayFor(model => model.Status)</p>
+                <p>@Html.DisplayFor(model => model.Priority)</p>
+                <p>@Html.DisplayFor(model => model.Id)</p>
+                <p>@Html.DisplayFor(model => model.CreatedDate)</p>
+                <p>
+                    @if (Model.Status == Status.Закрыта)
+                    {
+                        @Html.DisplayFor(model => model.CloseDate)
+                    }
+                    else if(Model.Status == Status.Открыта)
+                    {
+                        @Html.DisplayFor(model => model.OpenDate)
+                    }
+                </p>
+                @if(Model.Status == Status.Новая)
+                {
+                    <a class="btn btn-outline-warning" asp-action="Open" asp-route-id="@Model?.Id">Открыть</a>
+                }
+                else if (Model.Status == Status.Открыта)
+                {
+                    <a class="btn btn-outline-warning" asp-action="Close" asp-route-id="@Model?.Id">Закрыт</a>
+                }
+            </div>
+            <div class="col-3 border border-end-0 border-dark">
+                <h3>Описание задачи</h3>
+                <p>@Html.DisplayFor(model => model.Description)</p>
+            </div>
+        </div>
+    </div>
+</div>
